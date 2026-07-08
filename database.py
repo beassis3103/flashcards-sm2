@@ -31,3 +31,20 @@ def criar_tabelas(conn):
     """)
 
     conn.commit()
+
+def criar_pasta(conn, nome):
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO pastas (nome) VALUES (?)", (nome,))
+    conn.commit()
+    return cursor.lastrowid
+
+def listar_pastas(conn):
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM pastas")
+    return cursor.fetchall()
+
+def criar_flashcard(conn, pasta_id, pergunta, resposta):
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO flashcards (pasta_id, pergunta, resposta) VALUES (?, ?, ?)", (pasta_id, pergunta, resposta))
+    conn.commit() 
+    return cursor.lastrowid
