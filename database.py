@@ -48,3 +48,8 @@ def criar_flashcard(conn, pasta_id, pergunta, resposta):
     cursor.execute("INSERT INTO flashcards (pasta_id, pergunta, resposta) VALUES (?, ?, ?)", (pasta_id, pergunta, resposta))
     conn.commit() 
     return cursor.lastrowid
+
+def listar_flashcards_para_hoje(conn, pasta_id):
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM flashcards WHERE (pasta_id = ?) AND (prox_rev <= DATE('now))", (pasta_id,))
+    return cursor.fetchall()
