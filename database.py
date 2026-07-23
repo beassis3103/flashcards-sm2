@@ -1,4 +1,5 @@
 import sqlite3
+from algorithm import clacula_proxima_revisao, ajustar_qualidade_tempo
 
 def conectar():
     conn = sqlite3.connect("flashcards.db")
@@ -53,3 +54,15 @@ def listar_flashcards_para_hoje(conn, pasta_id):
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM flashcards WHERE (pasta_id = ?) AND (prox_rev <= DATE('now))", (pasta_id,))
     return cursor.fetchall()
+
+def atualizar_flashcard(conn, flashcard_id, qualidade, tmp_sec):
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM flashcards WHERE id = ?", (flashcard_id,))
+    cartao = cursor.fetchone()
+
+    
+
+    cursor.execute("""UPDATE flashcards
+                   SET intervalo = ?, repeticoes = ?, ft_facil = ?, prox_rev = ?, err_seg = ?
+                   WHERE id = ?
+                   """)
