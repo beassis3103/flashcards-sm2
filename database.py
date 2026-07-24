@@ -72,7 +72,7 @@ def atualizar_flashcard(conn, flashcard_id, qualidade, tmp_sec):
     
     conn.commit()
 
-def detectar_cartoes_problematicos(conn, limite=3):
+def detectar_cartoes_problematicos(conn, limite = 3):
     cursor = conn.cursor()
     cursor.execute("""SELECT f.id, f.pergunta, f.resposta, f.err_seg, p.nome
                    FROM flashcards f 
@@ -81,5 +81,17 @@ def detectar_cartoes_problematicos(conn, limite=3):
                    ORDER BY f.err_seg DESC""", (limite,))
     return cursor.fetchall()
 
+def exportar_csv(conn, caminho):
+    cursor = conn.cursor()
+    cursor.execute("""SELECT p.nome, f.pergunta, f.resposta
+                   FROM flashcards f
+                   JOIN pastas p ON f.id_pasta = p.id""")
+    linhas = cursor.fetchall()
+
+    with open(caminho, "w", newline = "", encoding = "utf-8") as arquivo:
+        writer = csv.writer(arquivo)
+        writer.writerow(["pasta", "pergunta", "resposta"])   #Cabeçalho do arqv
+        writer.writerows(linhas)                             #Todos os flashcards
+    print(f"Exportado {len(linhas)} cartões para {caminho}")
 
     
