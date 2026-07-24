@@ -1,5 +1,6 @@
 import sqlite3
-from algorithm import clacula_proxima_revisao, ajustar_qualidade_tempo
+from algorithm import calcula_proxima_revisao, ajustar_qualidade_tempo
+import csv
 
 def conectar():
     conn = sqlite3.connect("flashcards.db")
@@ -60,9 +61,25 @@ def atualizar_flashcard(conn, flashcard_id, qualidade, tmp_sec):
     cursor.execute("SELECT * FROM flashcards WHERE id = ?", (flashcard_id,))
     cartao = cursor.fetchone()
 
-    
+    qualidade_ajustada = ajustar_qualidade_tempo(qualidade, tmp_sec)
+    novo_interv, novas_rep, novo_fator, prox_data = calcula_proxima_revisao(qualidade_ajustada, cartao[5], cartao[4], cartao[6])
+    err_seg = cartao[8] + 1 if qualidade < 3 else 0
 
     cursor.execute("""UPDATE flashcards
                    SET intervalo = ?, repeticoes = ?, ft_facil = ?, prox_rev = ?, err_seg = ?
                    WHERE id = ?
-                   """)
+                   """, (novo_interv, novas_rep, novo_fator, prox_data, err_seg, flashcard_id))
+    
+    conn.commit()
+
+def detectar_cartoes_problematicos(conn, limite=3):
+    cursor = conn.cursor()
+    cursor.execute("""SELECT f.id, f.pergunta, f.resposta, f.err_seg, p.nome
+                   FROM flashcards f 
+                   JOIN pastas p ON f.id_pasta = p.id
+                   WHERE f.err_seg >= ?
+                   ORDER BY f.err_seg DESC""", (limite,))
+    return cursor.fetchall()
+
+
+    
