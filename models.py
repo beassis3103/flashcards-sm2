@@ -1,9 +1,11 @@
+#Classe que define os atributos da pasta
 class Pasta:
     def __init__(self, nome, id = None, dt_criacao = None):
         self.id = id
         self.nome = nome
         self.dt_criacao = dt_criacao
 
+#Classe que define os atributos do flashcard
 class Flashcard:
     def __init__(self, id, pasta_id, pergunta, resposta, intervalo = 0, repeticoes = 0, ft_facil = 2.5, prox_rev = None, err_seg = 0):
         self.id = id
