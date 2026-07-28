@@ -17,7 +17,7 @@ def calcula_proxima_revisao(qualidade, repeticoes, intervalo, ft_facil):
 
     #Se for > 3 quer dizer que o usuário acertou a pergunta; 
     #Dependendo de quantas vezes seguidas o usuário acertou essa pergunta, o intervalo de aparições aumenta
-    else
+    else:
         if repeticoes == 0:
             intervalo = 1
         elif repeticoes == 1:
@@ -32,21 +32,5 @@ def calcula_proxima_revisao(qualidade, repeticoes, intervalo, ft_facil):
 
     #Calcula a próxima data de acordo com a nova variação do intervalo
     prox_data = date.today() + timedelta(days = intervalo)
-    
-    return intervalo, repeticoes, ft_facil, prox_data
-    
-
-#Ajusta a qualidade de acordo com o tempo em que o usuário demorou para responder a pergunta, caso tenha acertado
-def ajustar_qualidade_tempo(qualidade, tmp_sec):
-    #Verifica se o usuário acertou, caso não, a qualidade permanece a mesma
-    if qualidade >= 3:
-        #É feita uma dinâmica: dependendo do tempo em segundos que o usuário demorou para responder, é tirada certa pontuação da qualidade
-        if tmp_sec > 20:
-            qualidade -= 2
-        elif tmp_sec > 10:
-            qualidade -= 1
-    #Depois da penalidade, caso a qualidade tenha ficado < 3, o valor é setado como = 3, sendo a menor pontuação da categoria "acertos"
-    if qualidade < 3:
-        qualidade = 3
     
     return qualidade
