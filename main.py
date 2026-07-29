@@ -1,3 +1,29 @@
+"""
+Tupla de um flashcard:
+cartao[0] = id         → ex: 1
+cartao[1] = pasta_id   → ex: 2
+cartao[2] = pergunta   → ex: "O que é fotossíntese?"
+cartao[3] = resposta   → ex: "Produção de energia pelas plantas"
+cartao[4] = intervalo  → ex: 6
+cartao[5] = repeticoes → ex: 2
+cartao[6] = ft_facil   → ex: 2.5
+cartao[7] = prox_rev   → ex: "2026-08-04"
+cartao[8] = err_seg    → ex: 0
+
+Tuplade uma pasta:
+pasta[0] = id          → ex: 1
+pasta[1] = nome        → ex: "Biologia"
+pasta[2] = dt_criacao  → ex: "2026-07-29"
+
+Tupla da função detectar_cartoes_problematicos():
+cartao[0] = id
+cartao[1] = pergunta
+cartao[2] = resposta
+cartao[3] = err_seg (erros seguidos)
+cartao[4] = nome da pasta
+"""
+
+
 import time
 from database import(
     conectar, criar_tabelas, criar_pasta, listar_pastas, criar_flashcard, 
@@ -19,9 +45,80 @@ def menu(conn):
             continue
 
         if escolha == 1:
-            #id_pasta = int(input(f"Digite o id da pasta que quer revisar: "))
-            #print(listar_flashcards_para_hoje(conn, id_pasta))
-            pass
+            #Mostra as pastas exsistentes
+            pastas = listar_pastas(conn)
+            if not pastas:
+                print(f"Nenhuma pasta criada ainda!")
+                continue
+        
+            #Usuário escolhe a pasta que quer revisar hoje
+            id_pasta = int(input("Digite o ID da pasta desejada: "))
+            cartoes = listar_flashcards_para_hoje(conn, id_pasta)
+
+            #Lista os flashcards de hoje, se houver
+            if not cartoes:
+                print(f"Nenhum flashcard para hoje!")
+                continue
+            print(f"\n {len(cartoes)} cartões para hoje:")
+
+            #Acumula o tempo total de resposta de cada cartão
+            tempo_total = 0
+
+            #Exibe os cartões
+            for i, cartao in enumerate(cartoes):
+                print(f"{'='*40}")
+                print(f"Cartão {i+1} de {len(cartoes)}")
+                print(f"{'='*40}")
+                print(f"\nPergunta: \n{cartao[2]}")
+                
+                #Prepara o usuário pra receber a pergunta
+                print("Prepare-se...\n")
+                for i in range (3, 0, -1):
+                    print(f"{i}...")
+                    time.sleep(1)
+                print("Vai!\n")
+
+                #Começa a contar o timer
+                start = time.time()
+                input("Pressione ENTER quando souber a resposta!")
+                tmp_sec = time.time() - start
+                tempo_total += tmp_sec
+
+                #Exibe a resposta
+                print(f"Resposta: {cartao[3]}")
+                print(f"Você respondeu em {tmp_sec:.1f} segundos.\n") 
+
+                #Legenda a autoavaliação
+                print("\nComo você se saiu?")
+                print("\n0 - Não lembrei nada")
+                print("\n1 - Errei, mas a resposta era familiar")
+                print("\n2 - Errei, mas estava quase certo")
+                print("\n3 - Acertei, mas com muito esforço")
+                print("\n4 - Acertei com uma pequena hesitação")
+                print("\n5 - Acertei imediatamente, sem esforço")
+
+                #Recebe a nota do usuário e trata exceção
+                try:
+                    qualidade = int(input("Digite sua nota (0-5): "))
+                except ValueError:
+                    qualidade = 0
+                
+                #Atualiza a qualidade e o tempo do cartão de acordo de como o uauário se saiu dessa vez
+                atualizar_flashcard(conn, id, qualidade, tmp_sec)
+            
+            #Mensagem de conclusão, o usuário reviu toda a pasta
+            print(f"\n{'='*40}")
+            print("\nSessão concluída, parabéns!! Você foi muito bem ;D")
+            print(f"\n{len(cartoes)} cartões revisados")
+            print(f"\nTempo total: {tempo_total:.0f} segundos")
+            print(f"\nTempo médio por cartão: {tempo_total/len(cartoes):.1f}")
+
+            #Exibe cartões problemáticos, se houver
+            prob = detectar_cartoes_problematicos(conn)
+            if prob:
+                print("\nAlguns cartões que talvez precisem ser reescritos: ")
+                for cartao in prob:
+                    print(f" - [{cartao[4]}] {cartao[1]} (errado {cartao[3]}x seguidas)")
 
         #Cria pasta
         elif escolha == 2:
