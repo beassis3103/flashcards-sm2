@@ -50,7 +50,11 @@ def menu(conn):
             if not pastas:
                 print(f"Nenhuma pasta criada ainda!")
                 continue
-        
+
+            print("\nPastas disponíveis:")
+            for pasta in pastas:
+                print(f"  {pasta[0]}. {pasta[1]}")
+
             #Usuário escolhe a pasta que quer revisar hoje
             id_pasta = int(input("Digite o ID da pasta desejada: "))
             cartoes = listar_flashcards_para_hoje(conn, id_pasta)
@@ -73,8 +77,8 @@ def menu(conn):
                 
                 #Prepara o usuário pra receber a pergunta
                 print("Prepare-se...\n")
-                for i in range (3, 0, -1):
-                    print(f"{i}...")
+                for seg in range (3, 0, -1):
+                    print(f"{seg}...")
                     time.sleep(1)
                 print("Vai!\n")
 
@@ -104,7 +108,7 @@ def menu(conn):
                     qualidade = 0
                 
                 #Atualiza a qualidade e o tempo do cartão de acordo de como o uauário se saiu dessa vez
-                atualizar_flashcard(conn, id, qualidade, tmp_sec)
+                atualizar_flashcard(conn, cartao[0], qualidade, tmp_sec)
             
             #Mensagem de conclusão, o usuário reviu toda a pasta
             print(f"\n{'='*40}")
