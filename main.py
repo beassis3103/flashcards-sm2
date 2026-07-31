@@ -132,6 +132,16 @@ def menu(conn):
 
         #Cria flashcard na pasta escolhida
         elif escolha == 3:
+            #Lista as pastas antes de pedir o id
+            pastas = listar_pastas(conn)
+            if not pastas:
+                print("Nenhuma pasta criada ainda! Crie uma pasta primeiro.")
+                continue
+    
+            print("\nPastas disponíveis:")
+            for pasta in pastas:
+                print(f"  {pasta[0]}. {pasta[1]}")
+
             id_pasta = int(input(f"Digite o id da pasta em que quer adicionar o flashcard: "))
             pergunta = input(f"Digite a pergunta do flashcard: ")
             resposta = input(f"Digite a resposta da pergunta: ")

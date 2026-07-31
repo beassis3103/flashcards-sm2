@@ -31,7 +31,7 @@ def criar_tabelas(conn):
             repeticoes INTEGER DEFAULT 0,
             ft_facil REAL DEFAULT 2.5,
             prox_rev DATE DEFAULT CURRENT_DATE,
-            err_seg INTEGER DEFAULT 0
+            err_seg INTEGER DEFAULT 0,
             FOREIGN KEY (id_pasta) REFERENCES pastas(id) ON DELETE CASCADE
         )
     """)
@@ -57,7 +57,7 @@ def listar_pastas(conn):
 #Função que cria um novo flashcard
 def criar_flashcard(conn, pasta_id, pergunta, resposta):
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO flashcards (pasta_id, pergunta, resposta) VALUES (?, ?, ?)", (pasta_id, pergunta, resposta))
+    cursor.execute("INSERT INTO flashcards (id_pasta, pergunta, resposta) VALUES (?, ?, ?)", (pasta_id, pergunta, resposta))
     conn.commit() 
     return cursor.lastrowid
 
@@ -65,7 +65,7 @@ def criar_flashcard(conn, pasta_id, pergunta, resposta):
 #Lista todos os flahscrads de uma determinada pasta que devem ser revisados hoje
 def listar_flashcards_para_hoje(conn, pasta_id):
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM flashcards WHERE (pasta_id = ?) AND (prox_rev <= DATE('now))", (pasta_id,))
+    cursor.execute("SELECT * FROM flashcards WHERE (id_pasta = ?) AND (prox_rev <= DATE('now'))", (pasta_id,))
     return cursor.fetchall()
 
 
